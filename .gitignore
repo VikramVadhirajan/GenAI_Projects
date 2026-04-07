@@ -1,0 +1,6 @@
+#ignoring virtual environmental installations
+.venv/
+#ignoring all .env file using **.env
+**.env  
+# ignoring the development containers
+.devcontainer/

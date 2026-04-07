@@ -1,0 +1,32 @@
+
+
+conda create -p venv python==3.10 -y #ensure the path is included in the user enviroment path
+conda activate venv/
+
+cd ML_Project
+git init
+git add app.py model/
+git status
+git commit -m "Added app and model folder"
+git remote add origin "https://github.com/VikramVadhirajan/Python_Scripts_Private.git"
+git branch -M main
+git push origin *main*
+git push -u origin main --force
+
+
+
+python -m venv .venv (best for hiding the data and for avoiding upload to git)
+.venv\Scripts\activate     # Windows
+# source venv/bin/activate  # Mac/Linux
+
+pip install --upgrade pip
+pip install -r requirements.txt
+
+
+
+git rm -r --cached 003_Scraping_scripts
+git commit -m "Stop tracking scraping scripts folder"
+
+
+
+jupyter nbconvert --to script notebook_name.ipynb
