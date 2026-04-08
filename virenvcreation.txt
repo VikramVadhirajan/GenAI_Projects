@@ -5,6 +5,7 @@ conda activate venv/
 
 cd ML_Project
 git init
+git add .
 git add app.py model/
 git status
 git commit -m "Added app and model folder"

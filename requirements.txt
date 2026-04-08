@@ -1,27 +1,37 @@
-langchain
+#Basic installations for running python and API key retrival
+langchain==0.2.16
 python-dotenv
 ipykernel
-langchain-community
+tqdm
+
+# For Data Ingestion
+langchain-community==0.2.16
 pypdf
 bs4
 arxiv
-pymupdf
+PyMuPDF
 wikipedia
+certifi
+
+# For Document or Text Splitting
 langchain-text-splitters
+
+# For Document or text Embeddings
 langchain-openai
-chromadb
 sentence_transformers
 langchain_huggingface
+
+#For Vector Database
 faiss-cpu
-langchain_chroma
+chromadb
+langchain-chroma
+
+langchain-core==0.2.38
 duckdb
 pandas
 openai
 langchain-groq
 duckduckgo_search==5.3.1b1
-pymupdf
-arxiv
-wikipedia
 mysql-connector-python
 SQLAlchemy
 validators==0.28.1
@@ -30,3 +40,4 @@ unstructured
 pytube
 numexpr
 huggingface_hub
+streamlit
