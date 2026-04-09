@@ -41,3 +41,7 @@ pytube
 numexpr
 huggingface_hub
 streamlit
+fastapi
+uvicorn
+langserve
+sse_starlette
