@@ -1,5 +1,6 @@
 #Basic installations for running python and API key retrival
 langchain==0.2.16
+tokenizers==0.19.1
 python-dotenv
 ipykernel
 tqdm
@@ -45,3 +46,6 @@ fastapi
 uvicorn
 langserve
 sse_starlette
+msoffcrypto-tool
+openpyxl 
+tqdm

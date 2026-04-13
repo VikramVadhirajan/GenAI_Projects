@@ -31,3 +31,13 @@ git commit -m "Stop tracking scraping scripts folder"
 
 
 jupyter nbconvert --to script notebook_name.ipynb
+
+
+## With UV PAckage manager
+
+### install
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+uv init 
+uv venv # By default it creates .venv 
+uv add -r requirements.txt
