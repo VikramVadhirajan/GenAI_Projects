@@ -1,0 +1,74 @@
+
+# Package Manager and Environment creater
+    Conda:
+        conda create -p venv python==3.10 -y #ensure the path is included in the user enviroment path
+        conda activate venv/
+        conda install --file requirements.txt
+
+    pip
+        python -m venv .venv (best for hiding the data and for avoiding upload to git)
+        .venv\Scripts\activate     # Windows
+        pip install -r requirements.txt
+
+    uv (recent and best)
+        powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex" ## To install
+        uv init  # to initialize and create teh toml file
+        uv venv --python 3.12 # By default it creates .venv 
+        uv add -r requirements.txt
+
+
+# Git commands 
+    Creating Git Local repository and pushing it 
+        git init
+        git add .
+        git add app.py model/
+        git status
+        git commit -m "Added app and model folder"
+        git remote add origin "https://github.com/VikramVadhirajan/Python_Scripts_Private.git"
+        git branch -M main
+        git push origin *main*
+        git push -u origin main --force
+
+    Removing or deleting a specific file from git and stop tracking. 
+        use .gitignore file 
+        git rm -r --cached 003_Scraping_scripts
+        git commit -m "Stop tracking scraping scripts folder"
+
+#Converting the Jupyter Notebook to python notebook
+    Static one time creation
+        jupyter nbconvert --to script notebook_name.ipynb
+    Colne a notebook to a python Jupyter notebook. 
+        jupytext --to py notebook.ipynb
+        jupytext --set-formats ipynb,py:percent notebook.ipynb
+
+
+# Web Reference:
+    Deployment Tools 
+        Streamlit: https://share.streamlit.io/  # for web deoployment of models
+    Gen AI Reference
+        Build tools:
+            Langsmith Tracing: https://smith.langchain.com/o/0c98ad67-56aa-4b62-9f3c-c09c320c35cc
+            gorq: https://console.groq.com/home
+
+        API keys or tokens
+            Open AI API keys: https://platform.openai.com/settings/organization/api-keys # pay as you go
+            Langsmith API Keys: https://smith.langchain.com/o/0c98ad67-56aa-4b62-9f3c-c09c320c35cc/settings/apikeys #free
+            gorq API keys : https://console.groq.com/keys # free 
+
+        Tracking 
+            Langsmith Tracing: https://smith.langchain.com/o/0c98ad67-56aa-4b62-9f3c-c09c320c35cc/projects#
+
+
+
+
+
+# Ollama CLI
+
+        ollama run <model-name># model name refer to the library https://ollama.com/library
+        List all models: ollama list
+        List running models: ollama ps
+        Download a model without immediately running it. ollama pull <model-name> 
+        Clear the conversation context.    /clear
+        Adjust model parameters during a session /set parameter ...
+
+
