@@ -47,8 +47,9 @@
         Streamlit: https://share.streamlit.io/  # for web deoployment of models
     Gen AI Reference
         Build tools:
-            Langsmith Tracing: https://smith.langchain.com/o/0c98ad67-56aa-4b62-9f3c-c09c320c35cc
+            Langsmith Home: https://smith.langchain.com/o/0c98ad67-56aa-4b62-9f3c-c09c320c35cc
             gorq: https://console.groq.com/home
+            Langsmith Tools: https://docs.langchain.com/oss/python/integrations/tools
 
         API keys or tokens
             Open AI API keys: https://platform.openai.com/settings/organization/api-keys # pay as you go
