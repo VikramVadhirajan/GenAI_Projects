@@ -49,3 +49,4 @@ sse_starlette
 msoffcrypto-tool
 openpyxl 
 tqdm
+langchain-classic

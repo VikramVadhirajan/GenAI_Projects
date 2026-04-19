@@ -50,6 +50,7 @@
             Langsmith Home: https://smith.langchain.com/o/0c98ad67-56aa-4b62-9f3c-c09c320c35cc
             gorq: https://console.groq.com/home
             Langsmith Tools: https://docs.langchain.com/oss/python/integrations/tools
+            Langchain SQL Toolkit: https://docs.langchain.com/oss/python/langchain/sql-agent
 
         API keys or tokens
             Open AI API keys: https://platform.openai.com/settings/organization/api-keys # pay as you go
