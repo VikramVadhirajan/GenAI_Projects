@@ -1,0 +1,52 @@
+#Basic installations for running python and API key retrival
+langchain==0.2.16
+tokenizers==0.19.1
+python-dotenv
+ipykernel
+tqdm
+
+# For Data Ingestion
+langchain-community==0.2.16
+pypdf
+bs4
+arxiv
+PyMuPDF
+wikipedia
+certifi
+
+# For Document or Text Splitting
+langchain-text-splitters
+
+# For Document or text Embeddings
+langchain-openai
+sentence_transformers
+langchain_huggingface
+
+#For Vector Database
+faiss-cpu
+chromadb
+langchain-chroma
+
+langchain-core==0.2.38
+duckdb
+pandas
+openai
+langchain-groq
+duckduckgo_search==5.3.1b1
+mysql-connector-python
+SQLAlchemy
+validators==0.28.1
+youtube_transcript_api
+unstructured
+pytube
+numexpr
+huggingface_hub
+streamlit
+fastapi
+uvicorn
+langserve
+sse_starlette
+msoffcrypto-tool
+openpyxl 
+tqdm
+langchain-classic
