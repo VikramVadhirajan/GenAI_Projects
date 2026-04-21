@@ -50,3 +50,7 @@ msoffcrypto-tool
 openpyxl 
 tqdm
 langchain-classic
+matplotlib
+seaborn
+langchain-experimental
+tabulate
