@@ -1,0 +1,8 @@
+pandas 
+openpyxl 
+matplotlib 
+seaborn 
+langchain 
+langchain-groq
+langchain-experimental
+tabulate
