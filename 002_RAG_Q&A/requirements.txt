@@ -1,0 +1,9 @@
+#Basic installations for running python and API key retrival
+streamlit
+langchain
+langchain-community
+langchain-huggingface
+langchain-groq
+faiss-cpu
+pypdf
+sentence-transformers
