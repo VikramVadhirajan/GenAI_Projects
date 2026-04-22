@@ -15,6 +15,7 @@
         uv init  # to initialize and create teh toml file
         uv venv --python 3.12 # By default it creates .venv 
         uv add -r requirements.txt
+        uv remove package_name
 
 
 # Git commands 

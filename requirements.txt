@@ -54,3 +54,4 @@ matplotlib
 seaborn
 langchain-experimental
 tabulate
+selenium
