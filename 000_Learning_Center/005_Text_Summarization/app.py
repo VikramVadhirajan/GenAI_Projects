@@ -3,6 +3,7 @@ from langchain.prompts import PromptTemplate
 from langchain_groq import ChatGroq
 from langchain.chains.summarize import load_summarize_chain
 from langchain_community.document_loaders import YoutubeLoader,UnstructuredURLLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 
 ## sstreamlit APP
@@ -19,7 +20,7 @@ with st.sidebar:
 generic_url=st.text_input("URL",label_visibility="collapsed")
 
 ## Gemma Model USsing Groq API
-llm =ChatGroq(model="Gemma-7b-It", groq_api_key=groq_api_key)
+llm =ChatGroq(model="llama-3.3-70b-versatile", groq_api_key=groq_api_key)
 
 prompt_template="""
 Provide a summary of the following content in 300 words:
@@ -40,14 +41,40 @@ if st.button("Summarize the Content from YT or Website"):
             with st.spinner("Waiting..."):
                 ## loading the website or yt video data
                 if "youtube.com" in generic_url:
-                    loader=YoutubeLoader.from_youtube_url(generic_url,add_video_info=True)
+                    loader=YoutubeLoader.from_youtube_url(generic_url,add_video_info=False)
                 else:
                     loader=UnstructuredURLLoader(urls=[generic_url],ssl_verify=False,
                                                  headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_5_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"})
                 docs=loader.load()
 
+                if not docs or not docs[0].page_content.strip():
+                    st.error("Failed to load content. The URL may be blocked or empty.")
+                    st.stop()
+
+                splitter = RecursiveCharacterTextSplitter(
+                    chunk_size=1000,
+                    chunk_overlap=100
+                )
+                refine_prompt = PromptTemplate(
+                                        template="""
+                                        Existing summary:
+                                        {existing_answer}
+
+                                        New content:
+                                        {text}
+
+                                        Refine the summary keeping it concise (300 words).
+                                        """,
+                                        input_variables=["existing_answer", "text"]
+                                    )
+                
+                docs = splitter.split_documents(docs)
                 ## Chain For Summarization
-                chain=load_summarize_chain(llm,chain_type="stuff",prompt=prompt)
+                chain=load_summarize_chain(llm,
+                                           chain_type="refine",
+                                           question_prompt=prompt,
+                                            refine_prompt=refine_prompt
+                                            )
                 output_summary=chain.run(docs)
 
                 st.success(output_summary)
