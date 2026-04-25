@@ -1,0 +1,18 @@
+
+
+
+
+
+
+
+
+#text to speech
+sentencepiece
+transformers
+dataset
+requests
+torch
+soundfile
+datasets==2.21.0
+nltk
+hf_xet
