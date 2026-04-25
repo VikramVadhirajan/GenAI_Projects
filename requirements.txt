@@ -1,57 +1,44 @@
-#Basic installations for running python and API key retrival
-langchain==0.2.16
-tokenizers==0.19.1
-python-dotenv
-ipykernel
-tqdm
+# ===== Core LangChain =====
+langchain>=0.3.0
+langchain-core>=0.3.0
+langchain-community>=0.3.0
+langchain-text-splitters>=0.3.0
 
-# For Data Ingestion
-langchain-community==0.2.16
-pypdf
-bs4
-arxiv
-PyMuPDF
-wikipedia
-certifi
+# ===== LLM Providers =====
+langchain-huggingface>=1.2.0
+langchain-groq>=0.1.9
 
-# For Document or Text Splitting
-langchain-text-splitters
+# ===== Hugging Face =====
+transformers>=4.44.0
+huggingface_hub>=0.36.0
+sentence-transformers>=2.7.0
+tokenizers>=0.19.0
 
-# For Document or text Embeddings
-langchain-openai
-sentence_transformers
-langchain_huggingface
-
-#For Vector Database
+# ===== Vector DB =====
 faiss-cpu
 chromadb
-langchain-chroma
 
-langchain-core==0.2.38
-duckdb
-pandas
-openai
-langchain-groq
-duckduckgo_search==5.3.1b1
+# ===== Document ingestion =====
+pypdf
+beautifulsoup4
+unstructured
+wikipedia
+arxiv
+
+# ===== Database =====
 mysql-connector-python
 SQLAlchemy
-validators==0.28.1
-youtube_transcript_api
-unstructured
-pytube
-numexpr
-huggingface_hub
+
+# ===== App / UI =====
 streamlit
-fastapi
-uvicorn
-langserve
-sse_starlette
-msoffcrypto-tool
-openpyxl 
+
+# ===== Excel =====
+openpyxl
+pandas
+
+# ===== Utilities =====
+python-dotenv
 tqdm
-langchain-classic
-matplotlib
-seaborn
-langchain-experimental
-tabulate
-selenium
+ipykernel
+certifi
+gradio

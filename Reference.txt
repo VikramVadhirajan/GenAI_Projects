@@ -75,3 +75,10 @@
         Adjust model parameters during a session /set parameter ...
 
 
+# Using GPU for your project.
+
+    Install cuda toolkit find the version and replace the suffix in the next step. 
+    uv add torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu130
+    use the above in your venv 
+
+
