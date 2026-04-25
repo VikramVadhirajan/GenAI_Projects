@@ -21,7 +21,7 @@ if not groq_api_key:
 
 #-----------------------------------------------------------------------------------------------------
 
-def load_llm(api_key, task="chat"):
+def load_llm(api_key, task="reasoning"):
     models = get_models(task)
 
     for model in models:
