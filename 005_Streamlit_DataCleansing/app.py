@@ -35,7 +35,25 @@ button[data-baseweb="tab"]:hover {
 """, unsafe_allow_html=True)
 
 
+st.markdown("""
+<style>
 
+/* Make ALL download buttons green */
+button[data-testid="baseButton-secondary"][id*="download_"] {
+    background-color: #16a34a !important;
+    color: white !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+}
+
+/* Hover */
+button[data-testid="baseButton-secondary"][id*="download_"]:hover {
+    background-color: #15803d !important;
+    color: white !important;
+}
+
+</style>
+""", unsafe_allow_html=True)
 
 
 import pandas as pd
@@ -81,8 +99,23 @@ def create_download(data, filename, label):
         label,
         data=buffer,
         file_name=filename,
-        mime="application/octet-stream"
+        mime="application/octet-stream",
+        key=f"download_{filename}"   # 🔥 important
     )
+
+
+def preview_data(df, key):
+    if st.button("👁️ Preview Data", key=key):
+        st.session_state[f"preview_{key}"] = True
+
+    if st.session_state.get(f"preview_{key}"):
+        with st.expander("🔍 Data Preview", expanded=True):
+            st.dataframe(df, use_container_width=True)
+
+        if st.button("❌ Close Preview", key=f"close_{key}"):
+            st.session_state[f"preview_{key}"] = False
+            st.rerun()
+
 
 
 st.set_page_config(page_title="AI Data Processing App", layout="wide")
@@ -224,6 +257,7 @@ if "df" in st.session_state:
                 )
                 symbol_cleaner = get_symbol_cleaner(selected_text_cols)
                 st.session_state["symbol_artifact"] = symbol_cleaner
+                preview_data(df_current, "symbol_preview")
                 st.rerun()
             else:
                 st.warning("No columns selected")
@@ -235,7 +269,7 @@ if "df" in st.session_state:
         st.markdown("---")
 
         # -------- COLUMN DROP -------- #
-        st.markdown("## 🗑️ Column Removal")
+        st.markdown("## 🗑️ Column Removal- Remove unwanted columns that will not contribute to the Analysis")
 
         col_map = get_column_display_map(df_current)
         drop_display = st.multiselect("Select Columns to Drop", list(col_map.keys()))
@@ -248,6 +282,7 @@ if "df" in st.session_state:
                 st.session_state["drop_msg"] = (
                     f"{len(drop_cols)} column(s) removed: {', '.join(drop_cols)}"
                 )
+                preview_data(df_current, "drop_preview")
                 st.rerun()
 
         if st.session_state.get("drop_msg"):
@@ -261,11 +296,13 @@ if "df" in st.session_state:
 
         col1, col2 = st.columns([1,1])
         with col1:
+            st.markdown("Tabular Summary")
             show_missing_summary(df_current)
         with col2:
+            st.markdown("Row level missing pattern (white = missing)")
             show_missing_matrix(df_current)
 
-        st.markdown("---")
+        # st.markdown("---")
 
         # -------- ROW REMOVAL -------- #
         st.markdown("## 🧹 Row-Level Missing Handling")
@@ -280,6 +317,7 @@ if "df" in st.session_state:
             df_current = df_current[row_missing_ratio <= threshold / 100]
             st.session_state["df_processed"] = df_current
             st.session_state["row_msg"] = f"{rows_to_drop} rows removed"
+            preview_data(df_current, "row_preview")
             st.rerun()
 
         if st.session_state.get("row_msg"):
@@ -297,10 +335,10 @@ if "df" in st.session_state:
             col1, col2 = st.columns([1, 1])
             with col1:
                 cat_cols = df_current[missing_cols].select_dtypes(include="object").columns.tolist()
-                selected_cat = st.multiselect("Categorical Columns", cat_cols)
+                selected_cat = st.multiselect("Categorical Columns (Simple imputer- mode) ", cat_cols)
             with col2:
                 num_cols = df_current[missing_cols].select_dtypes(include=["int64", "float64"]).columns.tolist()          
-                selected_num = st.multiselect("Numerical Columns", num_cols)
+                selected_num = st.multiselect("Numerical Columns (KNN imputer) ", num_cols)
 
             if st.button("🧠 Apply Imputation"):
                 df_current = impute_missing_values(df_current, selected_cat, selected_num)
@@ -314,6 +352,7 @@ if "df" in st.session_state:
                 )
                 imputers = get_imputers(df_current, selected_cat, selected_num)
                 st.session_state["imputer_artifact"] = imputers
+                preview_data(df_current, "impute_preview")
                 st.rerun()
 
         if st.session_state.get("impute_msg"):
@@ -364,6 +403,7 @@ if "df" in st.session_state:
                     f"Outliers treated in {len(selected_outliers)} column(s): "
                     f"{', '.join(selected_outliers)}"
                 )
+                preview_data(df_current, "outlier_preview")
                 st.rerun()
             else:
                 st.warning("Select at least one column")
@@ -421,6 +461,7 @@ if "df" in st.session_state:
                                                 }
             encoders = get_encoders(df_current, selected_enc_cols)
             st.session_state["encoder_artifact"] = encoders
+            preview_data(df_current, "encoding_preview")
             st.rerun()
 
         if st.session_state.get("encoding_msg"):
@@ -431,8 +472,13 @@ if "df" in st.session_state:
 
         # -------- SCALING -------- #
         st.markdown("## 📏 Scaling")
+        
+        
 
-        numeric_cols = df_current.select_dtypes(include=["int64", "float64"]).columns.tolist()
+        df_current = df_current.apply(lambda col: pd.to_numeric(col, errors="coerce"))
+        numeric_cols = df_current.select_dtypes(include=["number"]).columns.tolist()
+
+        # st.write("Numeric columns detected:", numeric_cols)
 
         target = st.selectbox("Target (not scaled)", ["None"] + numeric_cols)
         scaling_method = st.selectbox("Scaling Method", ["standard", "minmax"])
@@ -457,6 +503,7 @@ if "df" in st.session_state:
                                             }
             scaler = get_scaler(df_current, scaled_cols, scaling_method)
             st.session_state["scaler_artifact"] = scaler
+            
             st.rerun()
 
         if st.session_state.get("scaling_msg"):
@@ -474,54 +521,58 @@ if "df" in st.session_state:
 
         if "df_processed" in st.session_state:
             csv = st.session_state["df_processed"].to_csv(index=False).encode("utf-8")
-            st.download_button("Download CSV", data=csv, file_name="processed.csv")
+            st.download_button("Download cleaned CSV for Modelling", data=csv, file_name="processed.csv")
 
     # ================= PIPELINE ================= #
         st.markdown("### 📦 Saved Components")
+        # -------- OUTLIERS -------- #
+        data = st.session_state.get("outlier_artifact")
 
-        if st.button("Generate Outlier Pickle File"):
-            data = st.session_state.get("outlier_artifact")
-
-            if data:
-                create_download(data, "outlier.pkl", "Download outlier.pkl")
-            else:
-                st.warning("Outliers not applied yet")
-
-
-        if st.button("Generate Encoder Pickle File"):
-            data = st.session_state.get("encoder_artifact")
-
-            if data:
-                create_download(data, "encoder.pkl", "Download encoder.pkl")
-            else:
-                st.warning("Encoding not applied yet")
-
-                
-        if st.button("Generate Scaler Pickle File"):
-            data = st.session_state.get("scaler_artifact")
-
-            if data:
-                create_download(data, "scaler.pkl", "Download scaler.pkl")
-            else:
-                st.warning("Scaling not applied yet")
+        if data:
+            create_download(data, "outlier.pkl", "⬇️ Download Outlier File")
+        else:
+            st.button("⬇️ Download Outlier File", disabled=True, key="disabled_outlier")
+            st.caption("⚠️ Apply outlier treatment first")
 
 
-        if st.button("Generate Imputer Pickle File"):
-            data = st.session_state.get("imputer_artifact")
+        # -------- ENCODER -------- #
+        data = st.session_state.get("encoder_artifact")
 
-            if data:
-                create_download(data, "imputer.pkl", "Download imputer.pkl")
-            else:
-                st.warning("Imputation not applied yet")
+        if data:
+            create_download(data, "encoder.pkl", "⬇️ Download Encoder File")
+        else:
+            st.button("⬇️ Download Encoder File", disabled=True, key="disabled_encoder")
+            st.caption("⚠️ Apply encoding first")
 
 
-        if st.button("Generate Symbol Cleaner Pickle File"):
-            data = st.session_state.get("symbol_artifact")
+        # -------- SCALER -------- #
+        data = st.session_state.get("scaler_artifact")
 
-            if data:
-                create_download(data, "symbol_cleaner.pkl", "Download symbol_cleaner.pkl")
-            else:
-                st.warning("Symbol cleaning not applied yet")
+        if data:
+            create_download(data, "scaler.pkl", "⬇️ Download Scaler File")
+        else:
+            st.button("⬇️ Download Scaler File", disabled=True, key="disabled_scaler")
+            st.caption("⚠️ Apply scaling first")
+
+
+        # -------- IMPUTER -------- #
+        data = st.session_state.get("imputer_artifact")
+
+        if data:
+            create_download(data, "imputer.pkl", "⬇️ Download Imputer File")
+        else:
+            st.button("⬇️ Download Imputer File", disabled=True, key="disabled_imputer")
+            st.caption("⚠️ Apply imputation first")
+
+
+        # -------- SYMBOL CLEANER -------- #
+        data = st.session_state.get("symbol_artifact")
+
+        if data:
+            create_download(data, "symbol_cleaner.pkl", "⬇️ Download Symbol Cleaner File")
+        else:
+            st.button("⬇️ Download Symbol Cleaner File", disabled=True, key="disabled_symbol")
+            st.caption("⚠️ Apply symbol cleaning first")
             
 else:
     st.info("Upload a dataset to begin")
