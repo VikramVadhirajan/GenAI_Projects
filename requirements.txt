@@ -42,3 +42,17 @@ tqdm
 ipykernel
 certifi
 gradio
+
+
+# ======= Other GenAI toosl ======
+
+#AWS
+boto3
+awscli
+
+#NVIDIA NIM
+langchain_nvidia_ai_endpoints
+
+#Crew AI
+crewai
+crewai_tools
