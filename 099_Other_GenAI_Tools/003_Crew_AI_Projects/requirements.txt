@@ -1,0 +1,7 @@
+
+crewai 
+crewai-tools 
+pymysql 
+sqlalchemy 
+pandas
+crewai[litellm]
