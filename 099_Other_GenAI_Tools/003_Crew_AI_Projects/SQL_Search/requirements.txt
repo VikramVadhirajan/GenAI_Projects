@@ -1,0 +1,9 @@
+streamlit 
+crewai 
+crewai-tools 
+sqlalchemy 
+mysql-connector-python 
+pymysql 
+langchain 
+openai 
+python-dotenv
