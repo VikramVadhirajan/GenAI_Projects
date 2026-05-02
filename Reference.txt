@@ -60,6 +60,8 @@
 
         Tracking 
             Langsmith Tracing: https://smith.langchain.com/o/0c98ad67-56aa-4b62-9f3c-c09c320c35cc/projects#
+        Crew AI:
+            Tools overview : https://docs.crewai.com/en/tools/overview
 
 
 

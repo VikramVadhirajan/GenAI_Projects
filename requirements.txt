@@ -56,3 +56,9 @@ langchain_nvidia_ai_endpoints
 #Crew AI
 crewai
 crewai_tools
+pymysql 
+sqlalchemy 
+pandas
+selenium 
+webdriver-manager
+crewai[litellm]
