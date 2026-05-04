@@ -62,3 +62,9 @@ pandas
 selenium 
 webdriver-manager
 crewai[litellm]
+
+#Pinecone Libraries
+
+pinecone
+pinecone-text 
+pinecone-notebooks

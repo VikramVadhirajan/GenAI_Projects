@@ -62,7 +62,11 @@
             Langsmith Tracing: https://smith.langchain.com/o/0c98ad67-56aa-4b62-9f3c-c09c320c35cc/projects#
         Crew AI:
             Tools overview : https://docs.crewai.com/en/tools/overview
-
+        Pinecone DB
+            https://app.pinecone.io/organizations/-Orhje7NS5JAiWGb2n4k/projects/-/index-quickstart
+            https://app.pinecone.io/organizations/-Orhje7NS5JAiWGb2n4k/projects/cb921501-2413-4f71-86aa-22726e0ed668/keys
+        n8n 
+            https://n8n.io/
 
 
 
