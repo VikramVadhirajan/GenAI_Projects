@@ -1,11 +1,30 @@
+
 import streamlit as st
 from crewai_tools import NL2SQLTool
 from crewai import Agent, Task, Crew, Process
 import time
 from sqlalchemy import create_engine, text
 
+# -----------------------------
+# Session Memory (Chat History)
+# -----------------------------
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
 
-## Helper function to get DB information and tables
+
+def get_context():
+    history = st.session_state.chat_history
+    return "\n".join([f"{m['role']}: {m['content']}" for m in history[-10:]])
+
+
+def add_to_memory(user, bot):
+    st.session_state.chat_history.append({"role": "user", "content": user})
+    st.session_state.chat_history.append({"role": "assistant", "content": bot})
+
+
+# -----------------------------
+# DB Helpers
+# -----------------------------
 def get_databases(mysql_user, mysql_password, mysql_host):
     try:
         uri = f"mysql+mysqlconnector://{mysql_user}:{mysql_password}@{mysql_host}"
@@ -27,16 +46,13 @@ def get_tables(db_uri):
     return [list(t)[0] for t in tables]
 
 
-
 def get_selected_schema(db_uri, selected_tables):
     engine = create_engine(db_uri)
     schema_text = ""
 
     with engine.connect() as conn:
         for table in selected_tables:
-            columns = conn.execute(
-                text(f"DESCRIBE {table}")
-            ).fetchall()
+            columns = conn.execute(text(f"DESCRIBE {table}")).fetchall()
 
             schema_text += f"\nTable: {table}\nColumns:\n"
 
@@ -47,17 +63,14 @@ def get_selected_schema(db_uri, selected_tables):
 
 
 # -----------------------------
-# Sidebar Inputs
+# Sidebar Config
 # -----------------------------
-st.sidebar.title("⚙️ Configure your Database Connection...")
-
+st.sidebar.title("⚙️ Database Configuration")
 
 mysql_user = st.sidebar.text_input("User", value="root")
 mysql_password = st.sidebar.text_input("Password", type="password")
 mysql_host = st.sidebar.text_input("Host", value="localhost")
 
-
-# Load databases
 if "databases" not in st.session_state:
     st.session_state.databases = []
 
@@ -70,7 +83,6 @@ if st.sidebar.button("📂 Load Databases"):
         st.session_state.databases = dbs
         st.sidebar.success("Databases loaded!")
 
-# Select database
 selected_db = st.sidebar.selectbox(
     "🗄️ Select Database",
     options=st.session_state.databases
@@ -78,7 +90,6 @@ selected_db = st.sidebar.selectbox(
 
 if selected_db:
     db_uri = f"mysql+mysqlconnector://{mysql_user}:{mysql_password}@{mysql_host}/{selected_db}"
-
 
 if "tables" not in st.session_state:
     st.session_state.tables = []
@@ -95,47 +106,48 @@ selected_tables = st.sidebar.multiselect(
     options=st.session_state.tables
 )
 
-question = st.text_input(
-    "Enter your question",
-    placeholder="e.g. Which company has raised highest funds in Germany?"
-)
-
-run_button = st.button("🚀 Run Query")
 
 # -----------------------------
 # Main UI
 # -----------------------------
-st.title("🧠 SQL Search Query CrewAI ")
-st.write("Ask business questions directly from your database using AI.")
+st.title("🤖 SQL Chatbot with Memory")
+st.write("Ask questions about your database like a conversation.")
 
+# Display chat history
+for msg in st.session_state.chat_history:
+    with st.chat_message(msg["role"]):
+        st.write(msg["content"])
+
+# Chat input
+question = st.chat_input("Ask your database question...")
 
 # -----------------------------
-# Run Logic
+# Chat Logic
 # -----------------------------
+if question:
+    if not selected_db:
+        st.warning("Select a database first")
+        st.stop()
 
-if not selected_db:
-    st.warning("Select a database first")
-    st.stop()
+    if not selected_tables:
+        st.warning("Select at least one table")
+        st.stop()
 
-if not selected_tables:
-    st.warning("Select at least one table")
-    st.stop()
+    # Show user message
+    st.session_state.chat_history.append({"role": "user", "content": question})
+    with st.chat_message("user"):
+        st.write(question)
 
-if run_button:
-    
-    if not question.strip():
-        st.warning("Please enter a question.")
-    else:
-        try:
-            with st.spinner("Running CrewAI..."):
+    # Assistant response
+    with st.chat_message("assistant"):
+        with st.spinner("Running CrewAI..."):
+            try:
+                start_time = time.time()
 
-                # Tool
                 mysql_tool = NL2SQLTool(db_uri=db_uri)
+                schema = get_selected_schema(db_uri, selected_tables)
+                context = get_context()
 
-                # Schema (static for now)
-                schema = get_selected_schema(db_uri,selected_tables)
-
-                # Agent
                 sql_agent = Agent(
                     role="SQL Analyst",
                     goal="Answer business questions using MySQL database",
@@ -152,26 +164,25 @@ if run_button:
                     verbose=False
                 )
 
-                # Task
                 task = Task(
                     description=f"""
-                    Answer the user question using SQL.
+                    Previous conversation:
+                    {context}
+
+                    Current question:
+                    {question}
 
                     Steps:
                     1. Generate SQL query
-                    2. Execute using MySQL tool
-                    3. Return:
-                       - SQL query
-                       - Result
-                       - Explanation
+                    2. Execute query
+                    3. Return result + explanation
 
-                    User question: {question}
+                    Only SELECT queries.
                     """,
-                    expected_output="Only the final answer",
+                    expected_output="Final answer",
                     agent=sql_agent
                 )
 
-                # Crew
                 crew = Crew(
                     agents=[sql_agent],
                     tasks=[task],
@@ -179,21 +190,14 @@ if run_button:
                     verbose=False
                 )
 
-                # Run
-                start_time = time.time()
                 result = crew.kickoff()
+                response_text = result.raw if hasattr(result, "raw") else str(result)
+
+                st.write(response_text)
+                add_to_memory(question, response_text)
+
                 end_time = time.time()
-                execution_time = end_time - start_time
+                st.info(f"⏱️ Execution Time: {end_time - start_time:.2f} seconds")
 
-
-            # -----------------------------
-            # Output
-            # -----------------------------
-            # st.success("✅ Query Executed Successfully")
-
-            st.subheader("📊 Result")
-            st.success(result.raw)
-            st.info(f"⏱️ Execution Time: {execution_time:.2f} seconds")
-
-        except Exception as e:
-            st.error(f"❌ Error: {str(e)}")
+            except Exception as e:
+                st.error(f"❌ Error: {str(e)}")

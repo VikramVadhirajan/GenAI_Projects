@@ -80,7 +80,7 @@ streamlit run app.py
 
 ```
 .
-├── app.py
+├── sqlcrewapp.py
 ├── README.md
 └── requirements.txt
 ```
